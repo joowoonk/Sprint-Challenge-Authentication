@@ -36,11 +36,39 @@ describe("server", () => {
 });
 
 describe("POST /api/users/register", () => {
+  it("6th account created", function (done) {
+    return supertest(server)
+      .post("/api/auth/register")
+      .send({ username: "Nate", password: "123123" })
+      .then((res) => {
+        // console.log(res.body.user);
+        expect(res.body).toMatchObject({ id: 6 });
+        expect(res.body.user.id).toBe(6);
+        expect(res.body.user).toBeDefined();
+      });
+  });
   it("return 201 created", function (done) {
     return supertest(server)
       .post("/api/auth/register")
       .send({ username: "Joo", password: "123123" })
       .expect(201)
+      .end(function (err, res) {
+        if (err) return done(err);
+        done();
+      });
+  });
+  it("login works with a correct credentials?", function (done) {
+    supertest(server)
+      .post("/api/auth/register")
+      .send({ username: "Joo", password: "123123" })
+      .end(function (err, res) {
+        if (err) return done(err);
+        done();
+      });
+    return supertest(server)
+      .post("/api/auth/login")
+      .send({ username: "Joo", password: "123123" })
+      .expect(200)
       .end(function (err, res) {
         if (err) return done(err);
         done();
@@ -53,5 +81,18 @@ describe("POST /api/users/register", () => {
     const users = await db("users");
     let amount = users.length;
     expect(users).toHaveLength(amount);
+  });
+});
+
+describe("POST /api/users/login", () => {
+  it("login works without a correct credentials?", function (done) {
+    return supertest(server)
+      .post("/api/auth/login")
+      .send({ username: "Who", password: "123123" })
+      .expect(401)
+      .end(function (err, res) {
+        if (err) return done(err);
+        done();
+      });
   });
 });

@@ -5,7 +5,7 @@ exports.seed = function (knex) {
   const users = [
     {
       username: "John",
-      password: bcrypt.hashSync("secretToMyGrave", 10),
+      password: "123123",
     },
     {
       username: "admin",
